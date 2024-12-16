@@ -1,7 +1,7 @@
 
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require("dotenv").config();
 
 const app = express();
@@ -37,6 +37,7 @@ async function connectToDB() {
         const allPackagesDB = client.db("allpackageData");
         packageCollection = allPackagesDB.collection('packageCollection');
         userCollection = allPackagesDB.collection('userCollection');
+        specificPkgCollection = allPackagesDB.collection('specificPkgCollection')
         // -------------------------------------------------------------------------------------
 
         // ALL PACKAGES
@@ -47,6 +48,23 @@ async function connectToDB() {
         const packages = await packagesCursor.toArray();
         res.send(packages)
         })
+
+        // -------------------------------------------------------------------------------------
+
+        // post method of getting specific package
+        app.post('/specificpkg' , async( req , res)=>{
+            const spcificPkg = req.body
+            const result = await specificPkgCollection.insertOne(spcificPkg)
+            res.send(result)
+        })
+
+         // get method
+         app.get("/specificpkg", async (req, res) =>{
+            const packagesCursor = specificPkgCollection.find(); 
+        const package = await packagesCursor.toArray();
+        res.send(package)
+        })
+
 
 
     // ------------------------------------------------------------------------------------------
@@ -60,7 +78,21 @@ async function connectToDB() {
             res.send(result)
         })
 
+        // get  method
+        app.get('/userdetail', async(req ,res)=>{
+            const userCursor = userCollection.find()
+            const users = await userCursor.toArray()
+            res.send(users)
+        })
 
+        // delete mehod
+        app.delete('/userdetail/:id', async (req, res) => {
+            const id = req.params.id
+            console.log(id);
+            const query = {_id: new ObjectId(id)}
+            const result = await userCollection.deleteOne(query)
+            res.send(result)
+        })
 
     }
     
