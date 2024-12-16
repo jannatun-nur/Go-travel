@@ -22,6 +22,7 @@ const client = new MongoClient(uri, {
 });
 
 let packageCollection; 
+let userCollection;
 
 async function connectToDB() {
     try {
@@ -32,10 +33,13 @@ async function connectToDB() {
 
 
 
-        //  ALL PACKAGES
+        //  ALL COLLECTION
         const allPackagesDB = client.db("allpackageData");
         packageCollection = allPackagesDB.collection('packageCollection');
+        userCollection = allPackagesDB.collection('userCollection');
+        // -------------------------------------------------------------------------------------
 
+        // ALL PACKAGES
 
         // get method
         app.get("/allpackages", async (req, res) =>{
@@ -44,18 +48,15 @@ async function connectToDB() {
         res.send(packages)
         })
 
+
     // ------------------------------------------------------------------------------------------
         // ALL USER DETAILS
-
-        const allUserDB = client.db("allpackageData");
-        userCollection = allUserDB.collection('userCollection');
-
 
 
         // post method
         app.post('/userdetail' , async( req , res)=>{
-            const userDetail = req.body
-            const result = await userCollection.insertOne(userDetail)
+            const userDetails = req.body
+            const result = await userCollection.insertOne(userDetails)
             res.send(result)
         })
 
